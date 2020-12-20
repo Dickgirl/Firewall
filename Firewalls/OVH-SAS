@@ -1,0 +1,83 @@
+iptables -t nat -F
+iptables -t nat -X
+iptables -t mangle -F
+iptables -t mangle -X
+iptables -A INPUT -p udp --dport 9987 -j ACCEPT
+iptables -A INPUT -p udp --sport 9987 -j ACCEPT
+iptables -A INPUT -p udp --dport 9988 -j ACCEPT
+iptables -A INPUT -p udp --sport 9988 -j ACCEPT
+iptables -A INPUT -p tcp --dport 30033 -j ACCEPT
+iptables -A INPUT -p tcp --sport 30033 -j ACCEPT
+iptables -A INPUT -p tcp --dport 10011 -j ACCEPT
+iptables -A INPUT -p tcp --sport 10011 -j ACCEPT
+iptables -A INPUT -p tcp --dport 41144 -j ACCEPT
+iptables -A INPUT -p tcp --sport 41144 -j ACCEPT
+iptables -A INPUT -p tcp --dport 2010 -j ACCEPT
+iptables -A INPUT -p tcp --sport 2010 -j ACCEPT
+iptables -A INPUT -p tcp --dport 2011 -j ACCEPT
+iptables -A INPUT -p tcp --sport 2011 -j ACCEPT
+iptables -A INPUT -p tcp --dport 2008 -j ACCEPT
+iptables -A INPUT -p tcp --sport 2008 -j ACCEPT
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -p tcp --sport 80 -j ACCEPT
+iptables -A INPUT -p tcp --dport 8087 -j ACCEPT
+iptables -A INPUT -p tcp --sport 8087 -j ACCEPT
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT
+iptables -A INPUT -p tcp --sport 443 -j ACCEPT
+iptables -A INPUT -p tcp --dport 21 -j ACCEPT
+iptables -A INPUT -p tcp --sport 21 -j ACCEPT
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+iptables -A INPUT -p tcp --sport 22 -j ACCEPT
+iptables -A INPUT -p udp --dport 53 -j ACCEPT
+iptables -A INPUT -p udp --sport 53 -j ACCEPT
+iptables -A OUTPUT -p udp -d weblist.teamspeak.com --dport 2010 -j ACCEPT
+iptables -A OUTPUT -p tcp -d accounting.teamspeak.com --dport 2008 -j ACCEPT
+iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
+iptables -I INPUT -s 109.51.48.210 -j DROP
+iptables -A INPUT -p icmp --icmp-type echo-request -j REJECT
+iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,ACK FIN -j DROP
+iptables -A INPUT -p tcp -m tcp --tcp-flags PSH,ACK PSH -j DROP
+iptables -A INPUT -p tcp -m tcp --tcp-flags ACK,URG URG -j DROP
+iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,RST FIN,RST -j DROP
+iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
+iptables -A INPUT -p tcp -m tcp --tcp-flags SYN,RST SYN,RST -j DROP
+iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,SYN,RST,PSH,ACK,URG -j DROP
+iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
+iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,PSH,URG -j DROP
+iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,SYN,PSH,URG -j DROP
+iptables -A INPUT -p tcp -m tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG FIN,SYN,RST,ACK,URG -j DROP
+iptables -A INPUT -f -j DROP
+iptables -A INPUT -p udp -m udp --sport 19 -j DROP
+iptables -A INPUT -p udp -m udp --sport 123 -j DROP
+iptables -A INPUT -p udp -m udp --sport 161 -j DROP
+iptables -A INPUT -p udp -m udp --sport 1433 -j DROP
+iptables -A INPUT -p udp -m udp --sport 1900 -j DROP
+iptables -A INPUT -p udp -m udp --sport 27015 -j DROP
+iptables -A INPUT -p udp -m udp --sport 27950 -j DROP
+iptables -A INPUT -p udp -m udp --sport 27952 -j DROP
+iptables -A INPUT -p udp -m udp --sport 27960 -j DROP
+iptables -A INPUT -p udp -m udp --sport 27965 -j DROP
+iptables -A INPUT -p icmp -j DROP
+iptables -A INPUT -p udp -m udp --sport 19329 -j DROP
+iptables -A INPUT -p udp -m udp --sport 53 -j DROP
+iptables -A INPUT -p tcp -m tcp --sport 53 -j DROP
+iptables -A INPUT -p tcp -m tcp --sport 19329 -j DROP
+iptables -A INPUT -p tcp -m tcp --sport 5353 -j DROP
+iptables -A INPUT -p udp -m udp --sport 5353 -j DROP
+iptables -A INPUT -p udp -m udp --sport 7143 -j DROP
+iptables -A INPUT -p tcp -m tcp --sport 7143 -j DROP
+iptables -A INPUT -p tcp -m tcp --sport 123 -j DROP
+iptables -A INPUT -p udp -m udp --sport 123 -j DROP
+iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A OUTPUT -p icmp -j DROP
+iptables -N syn-flood
+iptables -A syn-flood -m limit --limit 10/sec --limit-burst 15 -j RETURN
+iptables -A syn-flood -j LOG --log-prefix "SYN flood: "
+iptables -A syn-flood -j DROP
+iptables-save > /etc/iptables/rules.v4
+iptables-save > $HOME/firewall.txt
