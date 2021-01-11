@@ -15,8 +15,12 @@ iptables -t mangle -A PREROUTING -p udp --sport 37810 -j DROP
 ```
 iptables -t mangle -A PREROUTING -p udp --sport 7001 -j DROP
 iptables -I INPUT -p udp -m length --length 100:140 -m string --string "nAFS" --algo kmp -j DROP
-iptables -A INPUT -p tcp -m tcp --tcp-flags SYN,ACK SYN,ACK -j DROP  iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP iptables -A INPUT -m state --state RELATED,ESTABLISHED -m limit --limit 10/sec --limit-burst 15 -j ACCEPT
-iptables -A INPUT -p tcp --sport 80 --syn -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT iptables -A INPUT -p tcp -m connlimit --connlimit-above 150 -j DROP iptables -A INPUT -p tcp --sport 443 --syn -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT iptables -FORWARD DROP ovh kill patch
+iptables -A INPUT -p tcp -m tcp --tcp-flags SYN,ACK SYN,ACK -j DROP  iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP 
+iptables -A INPUT -m state --state RELATED,ESTABLISHED -m limit --limit 10/sec --limit-burst 15 -j ACCEPT
+iptables -A INPUT -p tcp --sport 80 --syn -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT 
+iptables -A INPUT -p tcp -m connlimit --connlimit-above 150 -j DROP 
+iptables -A INPUT -p tcp --sport 443 --syn -m state --state NEW -m limit --limit 400/sec --limit-burst 15 -j ACCEPT 
+iptables -FORWARD DROP ovh kill patch
 ```
 
 ### OVH-SLAP Patch | OVH Bypass Patch
